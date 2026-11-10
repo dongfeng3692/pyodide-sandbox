@@ -171,16 +171,6 @@ curl http://127.0.0.1:8787/health        # {"ok":true,...}
 策略引擎（`src/policy/python/policy.py`）也可在纯 CPython 下导入做宿主侧
 预检——同一份代码在沙箱内外执行同一套约束。
 
-## 路线图
-
-- [ ] `strict-data` pandas 门面（read_csv/read_excel 身份绑定、严格解码、
-      单元格预检）
-- [ ] 阶段状态：具名 pickle 工件经调用方往返（宿主中介，不驻留沙箱）
-- [ ] matplotlib 产物通道（AGG 后端钩子、大小封顶，走
-      `result.artifacts`——不从 stdout 走私）
-- [ ] Prometheus `/metrics`
-- [ ] 浏览器构建：iframe（`allow-scripts`、不透明 origin）承载同一 core
-
 ## License
 
 Apache-2.0。运行时依赖：[Pyodide](https://pyodide.org)（按其 npm 元数据为

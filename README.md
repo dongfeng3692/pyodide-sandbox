@@ -186,18 +186,6 @@ The policy engine (`src/policy/python/policy.py`) is also importable under
 plain CPython for host-side pre-checks — the same code enforces inside and
 outside the sandbox.
 
-## Roadmap
-
-- [ ] `strict-data` pandas facade (read_csv/read_excel identity binding,
-      strict decode, cell prechecks)
-- [ ] stage state: named pickled artifacts round-tripped through the caller
-      (host-mediated, never sandbox-resident)
-- [ ] matplotlib artifact channel (AGG backend hook, size-capped, returned in
-      `result.artifacts` — not smuggled through stdout)
-- [ ] prometheus `/metrics`
-- [ ] browser build: iframe (`allow-scripts`, opaque origin) host for the
-      same core
-
 ## License
 
 Apache-2.0. Runtime dependency: [Pyodide](https://pyodide.org) (MPL-2.0 per
