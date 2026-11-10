@@ -81,13 +81,11 @@ export default [
       const failed = await c.admin('GET', '/admin/api/logs?filter=failed');
       assert.ok(failed.body.total >= 3);
       assert.ok(failed.body.rows.every((row) => row.ok === 0));
-      const policy = await c.admin('GET', '/admin/api/logs?filter=policy');
-      assert.ok(policy.body.total >= 1);
-      assert.ok(policy.body.rows.every((row) => row.error_type === 'PolicyError'));
-      // D12 class filters: blocked ⊃ policy + validation, model = ran & failed
+      // D12 class filters: blocked = policy + validation rejections, model = ran & failed
       const blocked = await c.admin('GET', '/admin/api/logs?filter=blocked');
       assert.ok(blocked.body.total >= 2, 'policy + too_many_files seeds');
       assert.ok(blocked.body.rows.every((row) => row.fail_class === 'blocked'));
+      assert.ok(blocked.body.rows.some((row) => row.error_type === 'PolicyError'));
       assert.ok(blocked.body.rows.some((row) => row.error_type === 'too_many_files'),
         'pre-check rejections record their real type now');
       const model = await c.admin('GET', '/admin/api/logs?filter=model');
@@ -99,7 +97,7 @@ export default [
       const timeout = await c.admin('GET', '/admin/api/logs?filter=timeout');
       assert.equal(timeout.body.total, 0, 'main profile never times out (frozen expectation)');
       // q over code text, scoped by filter
-      const byCode = await c.admin('GET', `/admin/api/logs?filter=policy&q=${encodeURIComponent('import os')}`);
+      const byCode = await c.admin('GET', `/admin/api/logs?filter=blocked&q=${encodeURIComponent('import os')}`);
       assert.ok(byCode.body.total >= 1);
       assert.match(byCode.body.rows[0].code_preview, /import os/);
       // q over error_type
@@ -124,7 +122,7 @@ export default [
     id: 'ADM-006', profile: 'main', title: 'executionDetail:全量 code + stdout_preview;未知 id 404',
     run: async (c) => {
       await c.exec({ code: 'import os\nresult = {}' }); // self-seed
-      const list = await c.admin('GET', '/admin/api/logs?filter=policy&limit=1');
+      const list = await c.admin('GET', '/admin/api/logs?filter=blocked&limit=1');
       const id = list.body.rows[0].id;
       const d = await c.admin('GET', `/admin/api/logs/${id}`);
       assert.equal(d.status, 200);

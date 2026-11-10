@@ -207,7 +207,6 @@ export class Store {
     const params = [];
     if (filter === 'failed') where.push('ok = 0');
     if (filter === 'timeout') where.push('timeout = 1');
-    if (filter === 'policy') where.push("error_type = 'PolicyError'"); // legacy alias of blocked
     if (filter === 'blocked' || filter === 'model' || filter === 'system') where.push(classWhere(filter));
     if (q) {
       where.push("(code LIKE ? OR COALESCE(error_type, '') LIKE ? OR COALESCE(error_code, '') LIKE ?)");
