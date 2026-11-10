@@ -1,0 +1,14 @@
+{
+  "name": "@pyodide-sandbox/core",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Policy engine + hardened Pyodide runtime (no server, no HTTP) for pyodide-sandbox",
+  "license": "Apache-2.0",
+  "main": "src/index.mjs",
+  "exports": {
+    ".": "./src/index.mjs"
+  },
+  "engines": {
+    "node": ">=22"
+  }
+}

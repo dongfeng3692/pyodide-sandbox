@@ -1,0 +1,18 @@
+[project]
+name = "pyodide-sandbox-client"
+version = "0.1.0"
+description = "Python client for pyodide-sandbox server (sync + async)"
+license = "Apache-2.0"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = ["httpx>=0.27"]
+
+[project.urls]
+Repository = "https://github.com/dongfeng3692/pyodide-sandbox"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["sbx_client"]

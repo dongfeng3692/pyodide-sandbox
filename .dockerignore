@@ -1,0 +1,14 @@
+# never ship the dev database (admin hash/tokens/execution logs), local tool
+# artifacts, secrets, or caches — the image warms its own pkg-cache at build time
+.git
+.github
+.zcode
+.claude
+data
+.env
+.env.*
+node_modules
+pkg-cache
+docs
+examples
+*.log

@@ -1,0 +1,24 @@
+{
+  "name": "@pyodide-sandbox/server",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "HTTP service + worker pool for pyodide-sandbox",
+  "license": "Apache-2.0",
+  "main": "src/service.mjs",
+  "bin": {
+    "pyodide-sandbox": "./bin/sbx-server.mjs"
+  },
+  "scripts": {
+    "start": "node ./bin/sbx-server.mjs",
+    "warm": "node ./src/warm.mjs",
+    "lock:wheels": "node ./src/make-wheels-lock.mjs",
+    "add:pkg": "node ./bin/sbx-install.mjs"
+  },
+  "dependencies": {
+    "@pyodide-sandbox/core": "0.1.0",
+    "pyodide": "314.0.7"
+  },
+  "engines": {
+    "node": ">=23.4"
+  }
+}

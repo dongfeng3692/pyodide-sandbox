@@ -1,0 +1,96 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  unit:
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        node: [22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"   # policy.py dual-use unit tests run under CPython
+      - run: npm ci
+      - run: npm run test:unit
+      # both offline — the same coverage `npm test` runs locally
+      - run: npm run test:installer
+      - run: npm run test:admin
+
+  server:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: npm ci
+      - name: Cache pyodide package cache
+        uses: actions/cache@v4
+        with:
+          path: pkg-cache
+          key: pyodide-pkg-cache-314.0.7
+      - name: Server tests (boots pyodide + pool + HTTP)
+        run: npm run test:server
+        env:
+          SBX_CACHE_DIR: ${{ github.workspace }}/pkg-cache
+
+  client-py:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Build & install client package
+        run: |
+          pip install -e packages/client-py
+          pip install hatchling
+          python -c "import sbx_client; print(sbx_client.SbxClient, sbx_client.AsyncSbxClient)"
+
+  docker:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build the image
+        run: docker build -t pyodide-sandbox:ci .
+      - name: Smoke test (boot under the permission model + exec round-trip)
+        run: |
+          docker run -d --name sbx -p 127.0.0.1:8787:8787 \
+            -e SBX_ADMIN_PASSWORD=ci-admin-pass-1 pyodide-sandbox:ci
+          for i in $(seq 1 45); do
+            curl -sf http://127.0.0.1:8787/health >/dev/null && break
+            sleep 2
+          done
+          curl -sf http://127.0.0.1:8787/health
+          echo
+          token=$(curl -s -X POST http://127.0.0.1:8787/admin/api/tokens \
+            -H "cookie: sbx_admin=$(curl -s -D - -o /dev/null -X POST http://127.0.0.1:8787/admin/api/login \
+              -H 'content-type: application/json' \
+              -d '{"user":"admin","password":"ci-admin-pass-1"}' | grep -oP 'sbx_admin=\K[a-f0-9]{64}')" \
+            -H 'content-type: application/json' -d '{"name":"ci"}' \
+            | node -e "let d='';process.stdin.on('data',c=>d+=c).on('end',()=>console.log(JSON.parse(d).token))")
+          curl -sf http://127.0.0.1:8787/exec -H "x-sbx-token: $token" \
+            -H 'content-type: application/json' \
+            -d '{"code":"result = {\"ok\": 6 == sum(pd.DataFrame({\"v\":[1,2,3]})[\"v\"])}"}'
+          echo
+          docker rm -f sbx

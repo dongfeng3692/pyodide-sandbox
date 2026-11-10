@@ -1,0 +1,22 @@
+node_modules/
+pkg-cache/
+wheels/*
+!wheels/wheels-lock.json
+# vendored test wheels (sha256-locked above; PKG regression group needs them)
+# their MIT licenses travel inside each wheel's dist-info
+!wheels/openpyxl-3.1.5-py2.py3-none-any.whl
+!wheels/et_xmlfile-2.0.0-py3-none-any.whl
+*.log
+dist/
+.coverage
+__pycache__/
+*.egg-info/
+.venv/
+data/
+# secrets — never commit; ship a redacted .env.example instead
+.env
+.env.*
+!.env.example
+# local AI-tool/session artifacts — never commit
+.zcode/
+.claude/

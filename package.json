@@ -1,0 +1,23 @@
+{
+  "name": "pyodide-sandbox",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Hardened, componentized Pyodide execution sandbox for AI agents (server-side, zero-persistence sessions)",
+  "license": "Apache-2.0",
+  "workspaces": [
+    "packages/core",
+    "packages/server"
+  ],
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "test:unit": "node --test packages/core/test/policy.test.mjs packages/core/test/packages.test.mjs packages/server/test/classify.test.mjs",
+    "test:server": "node packages/server/test/regression/run.mjs",
+    "test:admin": "node --test packages/server/test/admin-pages.test.mjs",
+    "test": "npm run test:unit && npm run test:installer && npm run test:admin && npm run test:server",
+    "start": "node packages/server/bin/sbx-server.mjs",
+    "test:installer": "node --test packages/server/test/installer.test.mjs"
+  }
+}

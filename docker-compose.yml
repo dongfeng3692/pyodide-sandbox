@@ -1,0 +1,39 @@
+# pyodide-sandbox — hardened local deployment.
+#
+#   docker compose up -d --build
+#
+# The API listens on 0.0.0.0:8787 inside the container; compose publishes it
+# on the HOST's loopback only. Put your authenticating edge (TLS, auth proxy)
+# in front before exposing it any further — see docs/threat-model.md §7.
+
+services:
+  sandbox:
+    build: .
+    image: pyodide-sandbox:latest
+    ports:
+      - "127.0.0.1:8787:8787"
+    environment:
+      # Leave SBX_ADMIN_PASSWORD unset and initialize the admin account on
+      # the first /admin visit (stored in the volume below) — or set a real
+      # secret here. Never deploy a placeholder: it is publicly known.
+      # SBX_ADMIN_PASSWORD: "<generate-a-real-secret>"
+      # SBX_POOL: "2"            # worker pool size
+      # SBX_TIMEOUT_MS: "60000"  # per-call timeout
+      # SBX_PRESET: "general"    # general | strict-data | minimal | raw(unsafe)
+    volumes:
+      - sandbox-data:/app/data   # SQLite: tokens, admin account, execution log
+    # outer hardening around the in-process limits (threat-model §4.6):
+    # the app writes only to /app/data (permission model) and /tmp
+    read_only: true
+    tmpfs:
+      - /tmp
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    mem_limit: 1g        # outer backstop; pool.rssLimitMb still applies per worker
+    restart: unless-stopped
+    # Serving never needs outbound network. To enforce egress denial, attach
+    # the service to an `internal: true` network and publish the port through
+    # a small reverse proxy on a second (egress-less) network.
+
+volumes:
+  sandbox-data:
