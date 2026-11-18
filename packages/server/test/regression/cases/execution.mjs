@@ -172,4 +172,16 @@ export default [
       assert.deepEqual(r.body.result, { n: 1 });
     },
   },
+  {
+    id: 'EXEC-024', profile: 'main', title: '非 ASCII 文件名原样保留(中文可按原名取)',
+    run: async (c) => {
+      const r = await c.exec({
+        code: 'keys = sorted(files)\nrow = files["流向-10月.xlsx"].read().decode()\n'
+          + 'result = {"keys": keys, "row": row}',
+        files: [{ name: '流向-10月.xlsx', b64: b64('a,b\n1,2\n') }],
+      });
+      assert.equal(r.body.ok, true, JSON.stringify(r.body.error ?? null));
+      assert.deepEqual(r.body.result, { keys: ['流向-10月.xlsx'], row: 'a,b\n1,2\n' });
+    },
+  },
 ];

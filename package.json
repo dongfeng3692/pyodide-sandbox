@@ -13,7 +13,7 @@
     "node": ">=22"
   },
   "scripts": {
-    "test:unit": "node --test packages/core/test/policy.test.mjs packages/core/test/packages.test.mjs packages/server/test/classify.test.mjs",
+    "test:unit": "node --test packages/core/test/policy.test.mjs packages/core/test/packages.test.mjs packages/core/test/runtime.test.mjs packages/server/test/classify.test.mjs",
     "test:server": "node packages/server/test/regression/run.mjs",
     "test:admin": "node --test packages/server/test/admin-pages.test.mjs",
     "test": "npm run test:unit && npm run test:installer && npm run test:admin && npm run test:server",

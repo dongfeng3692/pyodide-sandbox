@@ -11,9 +11,14 @@ import { resolvePolicy, buildWrapperSource } from '../policy/index.mjs';
 
 const HERE = dirname(fileURLToPath(import.meta.url));
 
+/** Basename-only + control-char scrub. Unicode is KEPT on purpose: MEMFS paths
+ *  are UTF-8, and the `files` dict keys must equal the names the caller already
+ *  promised the model (e.g. files["订单.xlsx"]). Mangling non-ASCII to '_'
+ *  broke that contract — the model was told one name, the dict held another. */
 export function sanitizeName(name) {
-  const base = String(name).replace(/.*[/\\]/, '');
-  return base.replace(/[^A-Za-z0-9._-]/g, '_') || 'file';
+  const base = String(name).replace(/.*[/\\]/, '').replace(/[\x00-\x1f\x7f]/g, '_');
+  if (base === '.' || base === '..') return 'file';
+  return base || 'file';
 }
 
 /** Fail-closed wheels verification: any wheel in the directory must be
