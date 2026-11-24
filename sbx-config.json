@@ -1,0 +1,13 @@
+{
+  "files": {
+    "maxCount": 5,
+    "maxBytesPerFile": 100000000
+  },
+  "server": {
+    "maxBodyBytes": 150000000
+  },
+  "pool": {
+    "execTimeoutMs": 120000,
+    "rssLimitMb": 2048
+  }
+}
