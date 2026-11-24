@@ -1,4 +1,5 @@
 {
   "et_xmlfile-2.0.0-py3-none-any.whl": "7a91720bc756843502c3b7504c77b8fe44217c85c537d85037f0f536151b2caa",
-  "openpyxl-3.1.5-py2.py3-none-any.whl": "5282c12b107bffeef825f4617dc029afaf41d0ea60823bbb665ef3079dc79de2"
+  "openpyxl-3.1.5-py2.py3-none-any.whl": "5282c12b107bffeef825f4617dc029afaf41d0ea60823bbb665ef3079dc79de2",
+  "python_calamine-0.6.2-cp314-cp314-pyemscripten_2026_0_wasm32.whl": "2c11e443ea50ab316212da92ad08a43414d5a977960884cb1d541e200e362e21"
 }
