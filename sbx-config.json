@@ -9,5 +9,13 @@
   "pool": {
     "execTimeoutMs": 120000,
     "rssLimitMb": 2048
-  }
+  },
+  "packages": [
+    {
+      "name": "python_calamine",
+      "source": "wheel",
+      "aliases": { "calamine": "python_calamine" },
+      "hint": "fast xlsx/xlsb/xls reader: pd.read_excel(files[\"a.xlsx\"], engine=\"calamine\") — prefer it for large sheets"
+    }
+  ]
 }
